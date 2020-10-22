@@ -11,7 +11,42 @@ class OrphanageController {
     this.service = new OrphanageService(new OrphanageRepositoryImpl());
   }
 
-  public async create(req: Request, res: Response) {
+  delete(req: Request, res: Response) {
+
+    try {
+      this.service.delete(req.params.id);
+  
+      return res.status(204).json();
+      
+    } catch (error) {
+      return res.status(500).json({message: `Erro ao deletar ${req.params.id}`, error});
+    }
+    
+  }
+
+  async list(req: Request, res: Response) {
+    const orphanages = await this.service.list();
+
+    return res.status(200).json(orphanages);
+  }
+
+  async get(req: Request, res: Response) {
+    try {
+      const orphanage = await this.service.get(req.params.id);
+
+      if (orphanage !== null) {
+        return res.status(200).json(orphanage);
+      } else {
+        return res.status(404).json();
+      }      
+    } catch (error) {
+      console.log(error);
+      return res.status(404).json(error);
+    }
+
+  }
+
+  async create(req: Request, res: Response) {
     const { 
       name, 
       latitude, 

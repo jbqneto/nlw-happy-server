@@ -9,6 +9,22 @@ export default class OrphanageService {
     this.repository = orphanageRepo;
   }
 
+  public delete(id: string) {
+    return this.repository.delete(Number.parseInt(id));
+  }
+
+  public list() {
+    return this.repository.list();
+  }
+
+  public get(id: string) {
+
+    if (id === undefined || id === null || id === '')
+      throw new Error(`ID inválido!`);
+
+    return this.repository.get(Number.parseInt(id));
+  }
+
   public save(orphanage: Orphanage) {
     return this.repository.save(orphanage);
   }
