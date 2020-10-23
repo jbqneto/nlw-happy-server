@@ -47,6 +47,7 @@ class OrphanageController {
   }
 
   async create(req: Request, res: Response) {
+    
     const { 
       name, 
       latitude, 
@@ -57,9 +58,14 @@ class OrphanageController {
       open_on_weekends
     } = req.body;
 
-    try {
+    try { 
 
-      const orphanage = await this.service.save({name, latitude, longitude, about, instructions, opening_hours, open_on_weekends})
+      const reqImages = req.files as Express.Multer.File[];
+      const images = reqImages.map(image => {
+        return {path: image.filename}
+      });
+
+      const orphanage = await this.service.save({name, latitude, longitude, about, instructions, opening_hours, open_on_weekends, images})
 
       return res.status(201).json(orphanage);      
     } catch (error) {

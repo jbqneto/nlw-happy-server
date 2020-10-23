@@ -1,13 +1,17 @@
 import express, {Request, Response} from 'express';
 import './infraestructure/database/connection';
+import uploadCOnfig from '../common/config/upload';
 import OrphanageController from './controller/OrphanageController';
+import multer from 'multer';
 
 const app = express();
 app.use(express.json());
 
+const upload = multer(uploadCOnfig);
+
 const orphanage = new OrphanageController();
 
-app.post('/orphanage', (req, res) => {
+app.post('/orphanage', upload.array('images'), (req, res) => {
   return orphanage.create(req, res);
 });
 
