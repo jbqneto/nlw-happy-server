@@ -3,6 +3,7 @@ import Orphanage from '../../domain/model/Ophanage';
 import OrphanageService from '../../domain/service/OrphanageService';
 import OrphanageRepositoryImpl from '../infraestructure/repository/OrphanageRepositoryImpl';
 import OrphanageMapper from '../mapper/OrphanageMapper';
+import * as Yup from 'yup';
 
 class OrphanageController {
 
@@ -60,17 +61,40 @@ class OrphanageController {
     } = req.body;
 
     try { 
-
       const reqImages = req.files as Express.Multer.File[];
       const images = reqImages.map(image => {
         return { path: image.filename };
       });
 
-      const orphanage = await this.service.save({name, latitude, longitude, about, instructions, opening_hours: opening_hours, open_on_weekends: open_on_weekends, images})
+      const data = {
+        name, 
+        latitude, 
+        longitude, 
+        about, 
+        instructions, 
+        opening_hours, 
+        open_on_weekends, 
+        images
+      };
+
+      const schema = Yup.object().shape({
+        name: Yup.string().required(),
+        latitude: Yup.number().required(),
+        longitude: Yup.number().required(),
+        about: Yup.string().required().max(300),
+        images: Yup.array(Yup.object().shape({
+          path: Yup.string().required()
+        })).notRequired() 
+      })
+
+      await schema.validate(data, {
+        abortEarly: false
+      });
+
+      const orphanage = await this.service.save(data);
 
       return res.status(201).json(orphanage);      
     } catch (error) {
-      console.log(error);
       return res.status(500).json({message: 'Erro ao salvar orfanato', error});
     }
 
