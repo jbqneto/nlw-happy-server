@@ -3,9 +3,11 @@ import './infraestructure/database/connection';
 import uploadCOnfig from '../common/config/upload';
 import OrphanageController from './controller/OrphanageController';
 import multer from 'multer';
+import path from 'path'
 
 const app = express();
 app.use(express.json());
+app.use('/uploads', express.static(path.join(__dirname, '..', 'common', 'uploads')))
 
 const upload = multer(uploadCOnfig);
 

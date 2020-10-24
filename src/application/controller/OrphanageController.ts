@@ -2,6 +2,7 @@ import {Request, Response} from 'express';
 import Orphanage from '../../domain/model/Ophanage';
 import OrphanageService from '../../domain/service/OrphanageService';
 import OrphanageRepositoryImpl from '../infraestructure/repository/OrphanageRepositoryImpl';
+import OrphanageMapper from '../mapper/OrphanageMapper';
 
 class OrphanageController {
 
@@ -27,7 +28,7 @@ class OrphanageController {
   async list(req: Request, res: Response) {
     const orphanages = await this.service.list();
 
-    return res.status(200).json(orphanages);
+    return res.status(200).json(OrphanageMapper.toRepresentationMany(orphanages));
   }
 
   async get(req: Request, res: Response) {
@@ -35,7 +36,7 @@ class OrphanageController {
       const orphanage = await this.service.get(req.params.id);
 
       if (orphanage !== null) {
-        return res.status(200).json(orphanage);
+        return res.status(200).json(OrphanageMapper.toRepresentation(orphanage));
       } else {
         return res.status(404).json();
       }      
@@ -62,10 +63,10 @@ class OrphanageController {
 
       const reqImages = req.files as Express.Multer.File[];
       const images = reqImages.map(image => {
-        return {path: image.filename}
+        return { path: image.filename };
       });
 
-      const orphanage = await this.service.save({name, latitude, longitude, about, instructions, opening_hours, open_on_weekends, images})
+      const orphanage = await this.service.save({name, latitude, longitude, about, instructions, opening_hours: opening_hours, open_on_weekends: open_on_weekends, images})
 
       return res.status(201).json(orphanage);      
     } catch (error) {

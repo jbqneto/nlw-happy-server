@@ -8,13 +8,17 @@ export default class OrphanageRepositoryImpl implements OrphanageRepository {
   async list(): Promise<Orphanage[]> {
     const repository = getRepository(Orphanage);
 
-    return await repository.find();
+    return await repository.find({
+      relations: ['images']
+    });
   }
   
   async get(id: number): Promise<Orphanage> {
     const repository = getRepository(Orphanage);
 
-    return await repository.findOneOrFail(id);
+    return await repository.findOneOrFail(id, {
+      relations: ['images']
+    });
   }
   
   async delete(id: number): Promise<void> {
